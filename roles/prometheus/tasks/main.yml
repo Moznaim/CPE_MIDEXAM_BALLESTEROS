@@ -1,0 +1,72 @@
+---
+  - name: install prometheus
+    tags: install
+    get_url:
+      url: https://github.com/prometheus/prometheus/releases/download/v2.54.1/prometheus-2.54.1.linux-amd64.tar.gz
+      dest: /tmp/prometheus.tar.gz
+
+  - name: extract prometheus
+    tags: extract
+    unarchive:
+      src: /tmp/prometheus.tar.gz
+      dest: /usr/local/bin
+      remote_src: yes
+
+  - name: create prometheus group
+    ansible.builtin.user:
+      name: prometheus
+      groups: prometheus
+      append: yes
+      state: present
+
+  - name: copy prometheus
+    copy:
+      src: /usr/local/bin/prometheus-2.54.1.linux-amd64/{{ item }}
+      dest: /usr/local/bin
+      mode: '0755'
+    with_items:
+      - prometheus
+      - promtool
+
+  - name: create config dir prometheus
+    file:
+      path: /etc/prometheus
+      state: directory
+      owner: prometheus
+      group: prometheus
+
+#  - name: prometheus copy config
+ #   copy:
+  #    src: /tmp/prometheus-2.54.1.linux-amd64/prometheus.yml
+  #    dest: /etc/prometheus/prometheus.yml
+  #    owner: prometheus
+  #    group: prometheus
+  #    mode: '0644'
+
+  - name: set up prometheus systemd service
+    copy:
+      dest: /etc/systemd/system/prometheus.service
+      content: |
+        [Unit]
+        Description=Prometheus
+        After=network.target
+
+        [Service]
+        User=Prometheus
+        ExecStart=/usr/local/bin/prometheus \
+          --config.file=/etc/prometheus/prometheus.yml \
+          --storage.tsdb.path=/var/lib/prometheus
+        Restart=always
+
+        [Install]
+        WantedBy=multi-user.target
+    notify:
+      - Reload systemd
+
+  - name: reload systemd and enable prometheus
+    systemd:
+      daemon_reload: yes
+      name: prometheus
+      enabled: yes
+      state: started
+

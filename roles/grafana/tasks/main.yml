@@ -1,0 +1,11 @@
+---
+
+- name: download grafana
+  get_url:
+    url: https://dl.grafana.com/enterprise/release/grafana-enterprise_11.3.0_amd64.deb
+    dest: /tmp/grafana-enterprise_11.3.0_amd64.deb
+
+- name: install grafana
+  command: dpkg -i /tmp/grafana-enterprise_11.3.0_amd64.deb
+
+

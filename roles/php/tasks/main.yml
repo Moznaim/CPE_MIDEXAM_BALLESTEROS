@@ -1,0 +1,6 @@
+---
+
+- name: install php
+  apt:
+    name:
+      - libapache2-mod-php

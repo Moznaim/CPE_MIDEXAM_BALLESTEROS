@@ -1,0 +1,50 @@
+---
+- hosts: apache
+  become: true
+  roles:
+    - apache
+
+- hosts: mariadb
+  become: true
+  roles:
+    - mariadb
+
+- hosts: elasticsearch
+  become: true
+  roles:
+    - elasticsearch
+
+- hosts: kibana
+  become: true
+  roles:
+    - kibana
+
+- hosts: logstash
+  become: true
+  roles:
+    - logstash
+
+- hosts: php
+  become: true
+  roles:
+    - php
+    
+- hosts: nagios
+  become: true
+  roles:
+    - nagios
+
+- hosts: grafana
+  become: true
+  roles:
+    - grafana
+    
+- hosts: prometheus
+  become: true
+  roles:
+    - prometheus
+
+- hosts: influxdb
+  become: true
+  roles:
+    - influxdb

@@ -1,0 +1,76 @@
+---
+  - name: install pre-requisites Ubuntu
+    tags: nagios
+    apt:
+      name:
+        - autoconf
+        - gcc
+        - libc6
+        - make
+        - wget
+        - unzip
+        - apache2
+        - php
+        - libapache2-mod-php
+        - libgd-dev
+        - openssl
+        - libssl-dev
+    when: ansible_distribution == "Ubuntu"
+
+  - name: install pre-requisites CentOS
+    tags: nagios
+    dnf:
+      name:
+        - gcc
+        - glibc
+        - glibc-common
+        - perl
+        - httpd
+        - php
+        - wget
+        - gd
+        - gd-devel
+        - openssl-devel
+    when: ansible_distribution == "CentOS"
+
+  - name: download Nagios on server
+    tags: nagios
+    get_url:
+      url: https://github.com/NagiosEnterprises/nagioscore/archive/nagios-4.4.14.tar.gz
+      dest: /tmp/nagios.tar.gz
+
+  - name: Extract nagios source
+    unarchive:
+      src: /tmp/nagios.tar.gz
+      dest: /tmp
+      remote_src: yes
+
+  - name: compile nagios
+    shell: |
+      cd /tmp/nagioscore-nagios-4.4.14
+      ./configure --with-httpd-conf=/etc/apache2/sites-enabled
+      make all
+      make install
+      make install-init
+      make install-daemoninit
+      make install-commandmode
+      make install-config
+      make install-webconf
+      args:
+      creates: /usr/local/nagios/bin/nagios
+    when: ansible_distribution == "Ubuntu"
+
+  - name: install nagios centos
+    shell: |
+      cd /tmp/nagioscore-nagios-4.4.14
+      ./configure
+      make all
+      make install
+      make install-init
+      make install-daemoninit
+      make install-commandmode
+      make install-config
+      make install-webconf
+      args:
+      creates: /usr/local/nagios/bin/nagios
+    when: ansible_distribuiton == "CentOS"

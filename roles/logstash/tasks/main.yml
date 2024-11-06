@@ -1,0 +1,39 @@
+---
+
+- name: add logstash key
+  rpm_key:
+    key: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    state: present
+
+- name: download logstash (redhat)
+  get_url:
+    url: https://artifacts.elastic.co/downloads/logstash/logstash-8.15.3-x86_64.rpm
+    dest: /tmp/logstash.rpm
+  when: ansible_os_family == "RedHat"
+
+- name: install logstash (RedHat)
+  dnf:
+    name: /tmp/logstash.rpm
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: download logstash (debian)
+  get_url:
+    url: https://artifacts.elastic.co/downloads/logstash/logstash-8.15.3-amd64.deb
+    dest: /tmp/logstash.deb
+  when: ansible_os_family == "Debian"
+
+- name: install logstash (debian)
+  command: dpkg -i /tmp/logstash.deb
+  when: ansible_os_family == "Debian"
+
+- name: configure logstash
+  template:
+    src: logstash.conf.j2
+    dest: /etc/logstash/conf.d/logstash.conf
+
+- name: start and enable logstash
+  systemd:
+    name: logstash
+    state: started
+    enabled: yes

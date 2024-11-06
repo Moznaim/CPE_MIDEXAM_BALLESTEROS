@@ -1,0 +1,29 @@
+all:
+  children:
+    elasticsearch:
+      hosts:
+        192.168.56.116
+    kibana:
+      hosts:
+        192.168.56.115
+    logstash:
+      hosts:
+        192.168.56.113
+    nagios:
+      hosts:
+        192.168.56.115
+    grafana:
+        192.168.56.116
+    prometheus:
+        192.168.56.115
+    influxdb:
+        192.168.56.113
+    apache:
+        192.168.56.114
+    php:
+        192.168.56.116
+    mariadb:
+        192.168.56.116
+vars:
+  ansible_user: erwin
+  ansible_ssh_private_key_file: /home/erwin/.ssh/id_rsa

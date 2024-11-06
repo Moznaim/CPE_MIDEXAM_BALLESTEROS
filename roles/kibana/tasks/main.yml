@@ -1,0 +1,34 @@
+---
+
+- name: download kibana (redhat)
+  get_url:
+    url: https://artifacts.elastic.co/downloads/kibana/kibana-8.15.3-x86_64.rpm
+    dest: /tmp/kibana.rpm
+  when: ansible_os_family == "RedHat"
+
+- name: install kibana (redhat)
+  dnf:
+    name: /tmp/kibana.rpm
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: download kibana (debian)
+  get_url:
+    url: https://artifacts.elastic.co/downloads/kibana/kibana-8.15.3-amd64.deb
+    dest: /tmp/kibana.deb
+  when: ansible_os_family == "Debian"
+
+#- name: install kibana (Debian)
+#  command: dpkg -i /tmp/kibana.deb
+#  when: ansible_os_family == "Debian"
+
+- name: configure kibana
+  template:
+    src: kibana.yml.j2
+    dest: /etc/kibana/kibana.yml
+
+- name: start and enable kibana
+  systemd:
+    name: kibana
+    state: started
+    enabled: yes

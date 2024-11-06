@@ -1,0 +1,12 @@
+---
+
+- name: install mariadb
+  dnf:
+    name:
+      - mariadb-server
+
+- name: start naruadb
+  service:
+    name: mariadb
+    enabled: true
+    state: started
